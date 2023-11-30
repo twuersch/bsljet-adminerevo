@@ -1564,3 +1564,30 @@ function edit_form($table, $fields, $row, $update) {
 </form>
 <?php
 }
+
+/** TRUE if we're on a "select" (overview of all records) view
+ * @return bool
+ */
+function isSelectView() {
+	return ($_GET && $_GET["select"]);
+}
+
+/** TRUE if we're on an edit view
+ * @return bool
+ */
+function isEditView() {
+	return ($_GET && $_GET["edit"]);
+}
+
+/** Get the name of the table we're viewing or editing
+ * @return string
+ */
+function getCurrentTableName() {
+	if (isSelectView()) {
+		return $_GET["select"];
+	} elseif (isEditView()) {
+		return $_GET["edit"];
+	} else {
+		return "";
+	}
+}

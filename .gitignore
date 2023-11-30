@@ -3,3 +3,4 @@
 /editor*.php
 /vendor/
 *.code-workspace
+.vscode/

@@ -1103,5 +1103,12 @@ bodyLoad('<?php echo (is_object($connection) ? preg_replace('~^(\d\.?\d).*~s', '
 		echo "</ul>\n";
 	}
 
+	/** Rearranges the fields for display. Any fields that are removed by this function won't be displayed.
+	 * @return array The rearranged fields.
+	 */
+	function rearrangeFields($fields) {
+		print("oink");
+		return $fields;
+	}
 }
 ?>
