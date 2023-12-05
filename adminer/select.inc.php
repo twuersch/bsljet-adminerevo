@@ -9,12 +9,13 @@ parse_str($_COOKIE["adminer_import"], $adminer_import);
 
 // Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
 // Part 1: Reordering fields
+$fieldOrderCustomizations = $adminer->defineFieldOrderCustomizations();
 $fieldOrderCustomization = [];
-if ($adminer::CUSTOM_FIELD_ORDER !== null
-&& array_key_exists($TABLE, $adminer::CUSTOM_FIELD_ORDER)
-&& array_key_exists("selectView", $adminer::CUSTOM_FIELD_ORDER[$TABLE])
+if (count($fieldOrderCustomizations) > 0
+&& array_key_exists($TABLE, $fieldOrderCustomizations)
+&& array_key_exists("selectView", $fieldOrderCustomizations[$TABLE])
 ) {
-	$fieldOrderCustomization = $adminer::CUSTOM_FIELD_ORDER[$TABLE]["selectView"];
+	$fieldOrderCustomization = $fieldOrderCustomizations[$TABLE]["selectView"];
 	$customizedFields = [];
 	foreach ($fieldOrderCustomization as $customizedFieldName) {
 		$customizedFields[$customizedFieldName] = $fields[$customizedFieldName];
@@ -330,7 +331,7 @@ if (!$columns && support("table")) {
 		} else {
 			$backward_keys = $adminer->backwardKeys($TABLE, $table_name);
 
-			// Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
+			// Reorder and show/hide displayed fields, if defined
 			// Part 2: Reordering columns within rows
 			if (count($fieldOrderCustomization) > 0) {
 				$customizedRows= [];
@@ -365,7 +366,9 @@ if (!$columns && support("table")) {
 					$val = $_GET["columns"][key($select)] ?? null;
 					$field = $fields[$select ? ($val ? $val["col"] : current($select)) : $key];
 					$name = ($field ? $adminer->fieldName($field, $rank) : ($val["fun"] ? "*" : $key));
-					if ($name != "" && count($fieldOrderCustomization) > 0 && in_array($field["field"], $fieldOrderCustomization)) {
+					// Reorder and show/hide displayed fields, if defined
+					// Part 3: showing & hiding
+					if ($name != "" && (count($fieldOrderCustomization) == 0 || (count($fieldOrderCustomization) > 0 && in_array($field["field"], $fieldOrderCustomization)))) {
 						$rank++;
 						$names[$key] = $name;
 						$column = idf_escape($key);

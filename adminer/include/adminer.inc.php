@@ -1103,12 +1103,27 @@ bodyLoad('<?php echo (is_object($connection) ? preg_replace('~^(\d\.?\d).*~s', '
 		echo "</ul>\n";
 	}
 
-	/** Rearranges the fields for display. Any fields that are removed by this function won't be displayed.
-	 * @return array The rearranged fields.
+	/** Defines the display order of the fields.
+	 * Returning the following array displays columns 1, 2 and 3 
+	 * in select view, and columns 4 & 5 in edit view, for the 
+	 * indicated table:
+	 * 
+	 * "tableName" => [
+     *     "selectView" => [
+     *         "column_1",
+     *         "column_2",
+     *         "column_3",
+     *     ],
+     *     "editView" => [
+     *         "column_4",
+     *         "column_5",
+     *     ],
+     * ]
+	 * 
+	 * @return array
 	 */
-	function rearrangeFields($fields) {
-		print("oink");
-		return $fields;
+	function defineFieldOrderCustomizations() {
+		return [];
 	}
 }
 ?>

@@ -664,4 +664,28 @@ qsl('div').onclick = whisperClick;", "")
 		}
 	}
 
+	/** Defines the display order of the fields.
+	 * Returning the following array displays columns 1, 2 and 3 
+	 * in select view, and columns 4 & 5 in edit view, for the 
+	 * indicated table:
+	 * 
+	 * "tableName" => [
+     *     "selectView" => [
+     *         "column_1",
+     *         "column_2",
+     *         "column_3",
+     *     ],
+     *     "editView" => [
+     *         "column_4",
+     *         "column_5",
+     *     ],
+     * ]
+	 * 
+	 * To use the defaults, return an empty array.
+	 * 
+	 * @return array
+	 */
+	function defineFieldOrderCustomizations() {
+		return [];
+	}
 }
