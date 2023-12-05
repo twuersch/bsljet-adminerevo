@@ -7,6 +7,26 @@ $foreign_keys = column_foreign_keys($TABLE);
 $oid = $table_status["Oid"];
 parse_str($_COOKIE["adminer_import"], $adminer_import);
 
+// Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
+// Part 1: Reordering fields
+$fieldOrderCustomization = [];
+if ($adminer::CUSTOM_FIELD_ORDER !== null
+&& array_key_exists($TABLE, $adminer::CUSTOM_FIELD_ORDER)
+&& array_key_exists("selectView", $adminer::CUSTOM_FIELD_ORDER[$TABLE])
+) {
+	$fieldOrderCustomization = $adminer::CUSTOM_FIELD_ORDER[$TABLE]["selectView"];
+	$customizedFields = [];
+	foreach ($fieldOrderCustomization as $customizedFieldName) {
+		$customizedFields[$customizedFieldName] = $fields[$customizedFieldName];
+	}
+	foreach ($fields as $fieldName => $field) {
+		if (!in_array($fieldName, $fieldOrderCustomization)) {
+			$customizedFields[$fieldName] = $field;
+		}
+	}
+	$fields = $customizedFields;
+}
+
 $rights = array(); // privilege => 0
 $columns = array(); // selectable columns
 $text_length = null;
@@ -309,6 +329,25 @@ if (!$columns && support("table")) {
 		} else {
 			$backward_keys = $adminer->backwardKeys($TABLE, $table_name);
 
+			// Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
+			// Part 2: Reordering columns within rows
+			if (count($fieldOrderCustomization) > 0) {
+				$customizedRows= [];
+				foreach ($rows as $row) {
+					$customizedRow = [];
+					foreach ($fieldOrderCustomization as $customizedFieldName) {
+						$customizedRow[$customizedFieldName] = $row[$customizedFieldName];
+					}
+					foreach ($row as $fieldName => $fieldValue) {
+						if (!in_array($fieldName, $fieldOrderCustomization)) {
+							$customizedRow[$fieldName] = $row[$fieldName];
+						}
+					}
+					$customizedRows[] = $customizedRow;
+				}
+				$rows = $customizedRows;
+			}
+
 			echo "<div class='scrollable'>";
 			echo "<table id='table' cellspacing='0' class='nowrap checkable'>";
 			echo script("mixin(qs('#table'), {onclick: tableClick, ondblclick: partialArg(tableClick, true), onkeydown: editingKeydown});");
@@ -325,7 +364,7 @@ if (!$columns && support("table")) {
 					$val = $_GET["columns"][key($select)] ?? null;
 					$field = $fields[$select ? ($val ? $val["col"] : current($select)) : $key];
 					$name = ($field ? $adminer->fieldName($field, $rank) : ($val["fun"] ? "*" : $key));
-					if ($name != "") {
+					if ($name != "" && count($fieldOrderCustomization) > 0 && in_array($field["field"], $fieldOrderCustomization)) {
 						$rank++;
 						$names[$key] = $name;
 						$column = idf_escape($key);

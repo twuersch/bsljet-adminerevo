@@ -18,7 +18,19 @@ function adminer_object() {
 
     // Specify customizations.
     class AdminerCustomization extends AdminerPlugin {
-        const FIELD_ARRANGEMENTS = array("all" => "oink");
+        const CUSTOM_FIELD_ORDER = [
+            "news" => [
+                "selectView" => [
+                    "id",
+                    "datum",
+                    "titel_kurz",
+                ],
+                "editView" => [
+                    "datum",
+                    "titel_kurz",
+                ],
+            ]
+        ];
     }
 
     // Let's go

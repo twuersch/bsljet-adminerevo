@@ -635,14 +635,7 @@ qsl('div').onclick = whisperClick;", "")
 			}
 		}
 		echo "</ul>\n";
-	}
-
-	/** Rearranges the fields for display. Any fields that are removed by this function won't be displayed.
-	 * @return array The rearranged fields.
-	 */
-	function rearrangeFields($fields) {
-		return $fields;
-	}
+	}	
 
 	function _foreignColumn($foreignKeys, $column) {
 		foreach ((array) $foreignKeys[$column] as $foreignKey) {

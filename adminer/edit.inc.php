@@ -115,5 +115,16 @@ if (!support("table") && !$fields) {
 	}
 }
 
-$fields = $adminer->rearrangeFields($fields);
+// Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
+if ($adminer::CUSTOM_FIELD_ORDER !== null
+&& array_key_exists($TABLE, $adminer::CUSTOM_FIELD_ORDER)
+&& array_key_exists("selectView", $adminer::CUSTOM_FIELD_ORDER[$TABLE])
+) {
+	$fieldOrderCustomization = $adminer::CUSTOM_FIELD_ORDER[$TABLE]["editView"];
+	$customizedFields = [];
+	foreach ($fieldOrderCustomization as $customizedFieldName) {
+		array_push($customizedFields, $fields[$customizedFieldName]);
+	}
+	$fields = $customizedFields;
+}
 edit_form($TABLE, $fields, $row, $update);
