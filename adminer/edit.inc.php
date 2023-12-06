@@ -123,7 +123,7 @@ if (array_key_exists($TABLE, $fieldOrderCustomizations)
 	$fieldOrderCustomization = $fieldOrderCustomizations[$TABLE]["editView"];
 	$customizedFields = [];
 	foreach ($fieldOrderCustomization as $customizedFieldName) {
-		array_push($customizedFields, $fields[$customizedFieldName]);
+		$customizedFields[$customizedFieldName] = $fields[$customizedFieldName];
 	}
 	$fields = $customizedFields;
 }

@@ -1120,6 +1120,8 @@ bodyLoad('<?php echo (is_object($connection) ? preg_replace('~^(\d\.?\d).*~s', '
      *     ],
      * ]
 	 * 
+	 * To use the defaults, return an empty array.
+	 * 
 	 * @return array
 	 */
 	function defineFieldOrderCustomizations() {
