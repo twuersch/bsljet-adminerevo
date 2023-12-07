@@ -7,21 +7,33 @@ $foreign_keys = column_foreign_keys($TABLE);
 $oid = $table_status["Oid"];
 parse_str($_COOKIE["adminer_import"], $adminer_import);
 
+// Apply default row order, if defined
+if (!$_GET["order"]) {
+	$defaultSelectOrderSettings = $adminer->defineDefaultSelectOrder();
+	if (array_key_exists($TABLE, $defaultSelectOrderSettings)) {
+		$defaultOrderSetting = $defaultSelectOrderSettings[$TABLE];
+		$column = $defaultOrderSetting[0];
+		$order = $defaultOrderSetting[1];
+		redirect(relative_uri()."&order[0]={$column}&{$order}[0]=1");
+	}
+}
+
+
 // Reorder and show/hide displayed fields by CUSTOM_FIELD_ORDER, if set
 // Part 1: Reordering fields
-$fieldOrderCustomizations = $adminer->defineFieldOrderCustomizations();
-$fieldOrderCustomization = [];
-if (count($fieldOrderCustomizations) > 0
-&& array_key_exists($TABLE, $fieldOrderCustomizations)
-&& array_key_exists("selectView", $fieldOrderCustomizations[$TABLE])
+$fieldOrderDefinitions = $adminer->defineFieldOrder();
+$fieldOrderDefinition = [];
+if (count($fieldOrderDefinitions) > 0
+&& array_key_exists($TABLE, $fieldOrderDefinitions)
+&& array_key_exists("selectView", $fieldOrderDefinitions[$TABLE])
 ) {
-	$fieldOrderCustomization = $fieldOrderCustomizations[$TABLE]["selectView"];
+	$fieldOrderDefinition = $fieldOrderDefinitions[$TABLE]["selectView"];
 	$customizedFields = [];
-	foreach ($fieldOrderCustomization as $customizedFieldName) {
+	foreach ($fieldOrderDefinition as $customizedFieldName) {
 		$customizedFields[$customizedFieldName] = $fields[$customizedFieldName];
 	}
 	foreach ($fields as $fieldName => $field) {
-		if (!in_array($fieldName, $fieldOrderCustomization)) {
+		if (!in_array($fieldName, $fieldOrderDefinition)) {
 			$customizedFields[$fieldName] = $field;
 		}
 	}
@@ -45,6 +57,7 @@ foreach ($fields as $key => $field) {
 list($select, $group) = $adminer->selectColumnsProcess($columns, $indexes);
 $is_group = count($group) < count($select) || strstr($select[0], "DISTINCT");
 $where = $adminer->selectSearchProcess($fields, $indexes);
+// TODO: selectOrderProcess nimmt die GET-Parameter zur Sortierung und bereitet sie für SQL auf. Bereits vorher müsste ich auf die Default-Sortierung umlenken.
 $order = $adminer->selectOrderProcess($fields, $indexes);
 $limit = $adminer->selectLimitProcess();
 
@@ -303,6 +316,7 @@ if (!$columns && support("table")) {
 			}
 		}
 	}
+	// TODO: vorher müssten wir bereits die Standardsortierung festlegen.
 	$result = $driver->select($TABLE, $select2, $where, $group2, $order, $limit, $page, true);
 
 	if (!$result) {
@@ -333,15 +347,15 @@ if (!$columns && support("table")) {
 
 			// Reorder and show/hide displayed fields, if defined
 			// Part 2: Reordering columns within rows
-			if (count($fieldOrderCustomization) > 0) {
+			if (count($fieldOrderDefinition) > 0) {
 				$customizedRows= [];
 				foreach ($rows as $row) {
 					$customizedRow = [];
-					foreach ($fieldOrderCustomization as $customizedFieldName) {
+					foreach ($fieldOrderDefinition as $customizedFieldName) {
 						$customizedRow[$customizedFieldName] = $row[$customizedFieldName];
 					}
 					foreach ($row as $fieldName => $fieldValue) {
-						if (!in_array($fieldName, $fieldOrderCustomization)) {
+						if (!in_array($fieldName, $fieldOrderDefinition)) {
 							$customizedRow[$fieldName] = $row[$fieldName];
 						}
 					}
@@ -368,7 +382,7 @@ if (!$columns && support("table")) {
 					$name = ($field ? $adminer->fieldName($field, $rank) : ($val["fun"] ? "*" : $key));
 					// Reorder and show/hide displayed fields, if defined
 					// Part 3: showing & hiding
-					if ($name != "" && (count($fieldOrderCustomization) == 0 || (count($fieldOrderCustomization) > 0 && in_array($field["field"], $fieldOrderCustomization)))) {
+					if ($name != "" && (count($fieldOrderDefinition) == 0 || (count($fieldOrderDefinition) > 0 && in_array($field["field"], $fieldOrderDefinition)))) {
 						$rank++;
 						$names[$key] = $name;
 						$column = idf_escape($key);

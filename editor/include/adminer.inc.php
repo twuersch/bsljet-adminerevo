@@ -685,7 +685,19 @@ qsl('div').onclick = whisperClick;", "")
 	 * 
 	 * @return array
 	 */
-	function defineFieldOrderCustomizations() {
+	function defineFieldOrder() {
+		return [];
+	}
+
+	/** Defines the default sort order for the SELECT view.
+	 * Return an array of the following form:
+	 * 
+	 * [
+	 *   "tableName1" => ["field", "desc"],
+	 *   "tableName2" => ["field", "asc"],
+	 * ]
+	 */
+	function defineDefaultSelectOrder() {
 		return [];
 	}
 }
