@@ -118,7 +118,7 @@ if (!support("table") && !$fields) {
 // Reorder and show/hide displayed fields, if defined
 $fieldOrderDefinitions = $adminer->defineFieldOrder();
 if (array_key_exists($TABLE, $fieldOrderDefinitions)
-&& array_key_exists("selectView", $fieldOrderDefinitions[$TABLE])
+&& array_key_exists("editView", $fieldOrderDefinitions[$TABLE])
 ) {
 	$fieldOrderCustomization = $fieldOrderDefinitions[$TABLE]["editView"];
 	$customizedFields = [];
