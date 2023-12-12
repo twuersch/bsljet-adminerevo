@@ -655,7 +655,7 @@ qsl('div').onclick = whisperClick;", "")
 			$return = &$this->_values[$target];
 			if ($return === null) {
 				$table_status = table_status($target);
-				$return = ($table_status["Rows"] > 1000 ? "" : array("" => "") + get_key_vals("SELECT $id, $name FROM " . table($target) . " ORDER BY 2"));
+				$return = ($table_status["Rows"] > 5000 ? "" : array("" => "") + get_key_vals("SELECT $id, $name FROM " . table($target) . " ORDER BY 2"));
 			}
 			if (!$return && $value !== null) {
 				return $connection->result("SELECT $name FROM " . table($target) . " WHERE $id = " . q($value));
